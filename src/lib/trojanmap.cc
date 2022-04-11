@@ -27,7 +27,14 @@ double TrojanMap::GetLat(const std::string& id) {
  * @return {double}         : longitude
  */
 double TrojanMap::GetLon(const std::string& id) { 
-    return 0;
+    double lon = 0.0;
+    for (auto j = data.begin(); j != data.end(); j++){
+    std::string id1 = data[j->first].id;
+    if(id1 == id ){
+      lon = data[j->first].lon;
+    }
+  }
+    return lon;
 }
 
 /**
@@ -54,8 +61,16 @@ std::string TrojanMap::GetName(const std::string& id) {
  * @return {std::vector<std::string>}  : neighbor ids
  */
 std::vector<std::string> TrojanMap::GetNeighborIDs(const std::string& id) {
-    return {};
+    std::vector<std::string> n_id;
+    for (auto j = data.begin(); j != data.end(); j++){
+    std::string id1 = data[j->first].id;
+    if(id1 == id ){
+      n_id = data[j->first].neighbors;
+    }
+  }
+    return n_id;
 }
+
 
 /**
  * GetID: Given a location name, return the id. 
@@ -82,8 +97,15 @@ std::string TrojanMap::GetID(const std::string& name) {
  * @return {std::pair<double,double>}  : (lat, lon)
  */
 std::pair<double, double> TrojanMap::GetPosition(std::string name) {
-  std::pair<double, double> results(-1, -1);
-  return results;
+  std::pair<double, double> pos(-1, -1);
+  std::string id = GetID(name) ;
+    if(id == "" ){
+      return pos;
+    } 
+    pos.first = GetLat(id);
+    pos.second = GetLon(id);
+    
+  return pos;
 }
 
 
@@ -130,8 +152,18 @@ int TrojanMap::CalculateEditDistance(std::string a, std::string b){
  * @return {std::string} tmp           : similar name
  */
 std::string TrojanMap::FindClosestName(std::string name) {
-  std::string tmp = "";
-  return tmp;
+  std::string temp = "";
+  int res = INT_MAX;
+  for(auto j = data.begin(); j != data.end(); j++){
+    std::string name1 = data[j->first].name;
+    int dist = CalculateEditDistance(name1, name);
+    if (dist<res){
+      res = dist;
+      temp = name1;
+    }
+
+  }
+  return temp;
 }
 
 
@@ -144,14 +176,14 @@ std::string TrojanMap::FindClosestName(std::string name) {
  */
 std::vector<std::string> TrojanMap::Autocomplete(std::string name){
   std::vector<std::string> results;
-  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-  for (auto j = data.begin(); j != data.end(); j++){
-      std::string str_orig = data[j->first].name;
-      std::string temp_str = data[j->first].name;
-      std::transform(temp_str.begin(), temp_str.end(), temp_str.begin(), ::tolower);
-      if(temp_str.find(name)== 0){
-        results.push_back(str_orig);
-      }
+  transform(name.begin(), name.end(), name.begin(), ::tolower);
+  for(auto j = data.begin(); j != data.end(); j++){
+    std::string str_orig = data[j->first].name;
+    std::string temp_str = data[j->first].name;
+    transform(temp_str.begin(), temp_str.end(), temp_str.begin(), ::tolower);
+    if(temp_str.find(name) == 0){
+      results.push_back(str_orig);
+    }
   }
   return results;
 }

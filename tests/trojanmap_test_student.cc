@@ -25,8 +25,31 @@ TEST(TrojanMapStudentTest, GetID2) {
   EXPECT_EQ(m.GetID("West Side Church"), "");
 }
 
+TEST(TrojanMapStudentTest, GetLon) {
+  TrojanMap TM;
+  EXPECT_EQ(TM.GetLon("653725"), -118.3212048);
+}
+
+TEST(TrojanMapStudentTest, GetNeighborIDs) {
+  TrojanMap TM;
+  std::vector<std::string>  out = {"277327731", "1613324102"};
+  EXPECT_EQ(TM.GetNeighborIDs("653725"), out);
+}
+
+TEST(TrojanMapStudentTest, GetPosition) {
+  TrojanMap TM;
+  std::pair<double, double> out(34.0302951, -118.2857237);
+  EXPECT_EQ(TM.GetPosition("Crosswalk"), out);
+}
+
+TEST(TrojanMapTest, FindClosestName) {
+  TrojanMap TM;
+  EXPECT_EQ(TM.FindClosestName("Rolphs"), "Ralphs");
+  EXPECT_EQ(TM.FindClosestName("Targeety"), "Target");
+}
 
 // ---------------- PHASE-1 TESTS --------------------------------------------
+
 
 TEST(TrojanMapTest, Autocomplete) {
   TrojanMap m;
@@ -73,7 +96,6 @@ TEST(TrojanMapTest, Autocomplete) {
   EXPECT_EQ(success, gt.size());
 }
 
-
 // Test CalculateEditDistance function
 TEST(TrojanMapTest, CalculateEditDistance) {
   TrojanMap m;
@@ -81,3 +103,25 @@ TEST(TrojanMapTest, CalculateEditDistance) {
   EXPECT_EQ(m.CalculateEditDistance("intention", "execution"), 5);
 }
 
+
+// Test FindPosition function
+TEST(TrojanMapTest, FindPosition) {
+  TrojanMap m;
+  
+  // Test Chick-fil-A
+  auto position = m.GetPosition("Chick-fil-A");
+  std::pair<double, double> gt1(34.0167334, -118.2825307); // groundtruth for "Chick-fil-A"
+  EXPECT_EQ(position, gt1);
+  // Test Ralphs
+  position = m.GetPosition("Ralphs");
+  std::pair<double, double> gt2(34.0317653, -118.2908339); // groundtruth for "Ralphs"
+  EXPECT_EQ(position, gt2);
+  // Test Target
+  position = m.GetPosition("Target");
+  std::pair<double, double> gt3(34.0257016, -118.2843512); // groundtruth for "Target"
+  EXPECT_EQ(position, gt3);
+  // Test Unknown
+  position = m.GetPosition("XXX");
+  std::pair<double, double> gt4(-1, -1);
+  EXPECT_EQ(position, gt4);
+}

@@ -11,6 +11,9 @@ Phase 3 submission: Sunday, May 1 by 23:59 pm
 
 Video Presentation: Friday, April 29
 
+## TEAMMATES:
+## 1. Vaishnavi Channakeshava
+## 2. Sanjana Vasudeva
 
 ## TrojanMap
 
