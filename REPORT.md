@@ -58,9 +58,9 @@ Time taken by function: 107 ms
 
 Time Complexity : O((M + N)log(N))
 
-<p> 
-align="center"><img src="img/ralphs_target_dijkstra.png" alt="Trojan" width="500" 
-<em>Dijkstra path from Ralphs to Target</em>
+<p align="center"><img src="img/ralphs_target_dijkstra.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Dijkstra path from Ralphs to Target
 </p>
 
 
