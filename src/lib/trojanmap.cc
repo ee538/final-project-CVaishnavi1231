@@ -232,6 +232,66 @@ double TrojanMap::CalculatePathLength(const std::vector<std::string> &path) {
 std::vector<std::string> TrojanMap::CalculateShortestPath_Dijkstra(
     std::string location1_name, std::string location2_name) {
   std::vector<std::string> path;
+  std::string start = GetID(location1_name);
+  std::string end = GetID(location2_name); 
+  if(start == "" || end == ""){
+    return path;
+  }
+  std::priority_queue <std::pair<double,std::string>,std::vector<std::pair<double,std::string>>,std::greater<std::pair<double,std::string>>> pq;                 //Priority queue to implement Heap with <distance,node ID>
+  std::unordered_map <std::string,double> dist;                 
+  std::unordered_map <std::string,std::string> pre;   
+  std::unordered_map <std::string,bool> visited;        
+    
+  for(auto j = data.begin(); j != data.end(); j++){
+      dist[data[j->first].id] = DBL_MAX;
+      pre[data[j->first].id] = "";
+      visited[data[j->first].id] = false;
+  }
+    
+  dist[start] = 0;
+  pq.push(std::make_pair(dist[start],start));
+  
+  while(!pq.empty()){
+    std::pair<double,std::string> pair_pq = pq.top();
+    std::string current_id = pair_pq.second;
+    pq.pop();
+    if(current_id!=end){
+      if(CalculateDistance(current_id,start)>dist[current_id]){
+        continue;
+      }
+      else if(visited[current_id]){
+        continue;
+      }
+      else{
+        visited[current_id] = true;
+        std::vector <std::string> neighbor_id_list  = data[current_id].neighbors;
+        for(auto n : neighbor_id_list){
+            double new_dist = dist[current_id] + CalculateDistance(current_id,n);
+             if(new_dist < dist[n]){
+               dist[n] = new_dist;
+               pre[n] = current_id;   
+               pq.push(std::make_pair(dist[n],n));          
+              }
+        }
+      }
+    }
+    else{
+      visited[end] = true;
+      break;
+    }
+  }
+
+  if(!visited[end]){
+    return path;   
+  }
+     
+  for(auto node = end; node!= start; node = pre[node])
+  {
+    path.push_back(node);
+  }
+
+  path.push_back(start);
+  std::reverse(path.begin(),path.end());
   return path;
 }
 
@@ -283,6 +343,15 @@ std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravellingTr
  */
 std::vector<std::string> TrojanMap::ReadLocationsFromCSVFile(std::string locations_filename){
   std::vector<std::string> location_names_from_csv;
+  std::fstream fin;
+  fin.open(locations_filename, std::ios::in);
+  std::string line, word;
+
+  getline(fin, line);
+  while (getline(fin, line)) {
+    location_names_from_csv.push_back(line);
+  }  
+  fin.close();
   return location_names_from_csv;
 }
 
@@ -295,6 +364,21 @@ std::vector<std::string> TrojanMap::ReadLocationsFromCSVFile(std::string locatio
  */
 std::vector<std::vector<std::string>> TrojanMap::ReadDependenciesFromCSVFile(std::string dependencies_filename){
   std::vector<std::vector<std::string>> dependencies_from_csv;
+  std::fstream fin;
+  fin.open(dependencies_filename, std::ios::in);
+  std::string line, word;
+
+  getline(fin, line);
+  while (getline(fin, line)) {
+    std::stringstream s(line);
+    std::string temp;
+    std::vector<std::string> dependencies;
+    while(getline(s, temp, ',')) {
+      dependencies.push_back(temp);
+    }
+  dependencies_from_csv.push_back(dependencies);
+  }
+  fin.close();
   return dependencies_from_csv;
 }
 
@@ -306,10 +390,57 @@ std::vector<std::vector<std::string>> TrojanMap::ReadDependenciesFromCSVFile(std
  * @param  {std::vector<std::vector<std::string>>} dependencies     : prerequisites
  * @return {std::vector<std::string>} results                       : results
  */
+
+void TrojanMap::topologicalsort_helper(std::string loc,std::map<std::string, bool> &visited,std::stack<std::string> &loc_stack,std::unordered_map<std::string, std::vector<std::string>> adj ){
+  visited[loc] = true;
+  std::vector<std::string> adj_list = adj[loc];
+  for(auto i:adj_list){
+    if(!visited[i]){
+      topologicalsort_helper(i,visited,loc_stack,adj);
+    }
+  }
+  loc_stack.push(loc);
+}
+
 std::vector<std::string> TrojanMap::DeliveringTrojan(std::vector<std::string> &locations,
                                                      std::vector<std::vector<std::string>> &dependencies){
   std::vector<std::string> result;
-  return result;                                                     
+
+  //creating DAG
+
+  std::unordered_map<std::string, std::vector<std::string>> adj;
+
+  for(auto l:locations){
+    std::vector<std::string> temp;
+    adj[l] = temp;
+  }
+
+  for(auto d:dependencies){
+    if(adj.find(d[1]) != adj.end()){
+      std::vector<std::string> temp_list = adj[d[1]];
+      if(std::find(temp_list.begin(), temp_list.end(), d[0]) != temp_list.end()){
+        std::vector<std::string> temp_res;
+        return temp_res;
+      }
+    }
+    adj[d[0]].push_back(d[1]);
+  }
+  std::map<std::string, bool> visited;
+
+  std::stack<std::string> loc_stack;
+
+  for(auto l:locations){
+    visited[l] = false;
+  }
+  for (int i = 0; i < locations.size(); i++)
+    if (visited[locations[i]] == false)
+      topologicalsort_helper(locations[i], visited, loc_stack, adj);
+ 
+    while(!loc_stack.empty()) {
+        result.push_back(loc_stack.top()); 
+        loc_stack.pop();
+    }
+  return result;                                                          
 }
 
 /**

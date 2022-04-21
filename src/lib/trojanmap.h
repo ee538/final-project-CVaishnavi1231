@@ -125,6 +125,7 @@ class TrojanMap {
   std::vector<std::string> FindNearby(std::string, std::string, double, int);
   
   //----------------------------------------------------- User-defined functions
+  void topologicalsort_helper(std::string loc,std::map<std::string, bool> &visited,std::stack<std::string> &loc_stack,std::unordered_map<std::string, std::vector<std::string>> adj);
 
 };
 

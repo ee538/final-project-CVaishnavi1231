@@ -63,6 +63,10 @@ Time Complexity : O((M + N)log(N))
 Dijkstra path from Ralphs to Target
 </p>
 
+<p align="center"><img src="img/cafe_fashion.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Dijkstra path from 23rd Street Cafe to Fashion District
+</p>
 
 
 11. ReadLocationsFromCSVFile
@@ -77,7 +81,34 @@ The function ReadDependenciesFromCSVFile takes CSV filename whic has the source 
 
 Time Complexity : O(M*N)
 
+16. Topologicalsort_helper
 
+The Topologicalsort_helper is a recursive function. The visited map is updated to true for the given location. Next, the list of adjacent locations is obtained from the directed a-cyclic graph. We iterate over this list and if the location has not been visited we call the helper function recursively on this function. Next, we update the stack with the location given to the helper function.
+
+Time Complexity : O(N)
+
+17. DeliveringTrojan
+
+This function creates directed a-cyclic graph using dependecies vector. To keep track of the id visited we use a visited map with string a boolean as the pair wherein the boolean value is set to false initially for all the points in the location vector. We also create a stack to store the locations that are visited. The helper function is invoked if the location is not visited. Next, the contets of the stack is pushed to the resulting vector.
+
+Time taken by function: 0 ms
+
+Time Complexity : O(M*N)
+
+<p align="center"><img src="img/topological_1.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Topological sorted path of Ralphs to Chick-Fil-A to KFC
+</p>
+
+<p align="center"><img src="img/topological_2.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Topological sorted path of Target to 901 Bar & Grill to The Caribbean Apartments to Parkside Dining Hall to Social Security Administration
+</p>
+
+<p align="center"><img src="img/topological_3.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Topological sorted path of Food 4 Less to Chevron 2 to Adams-Normandie to Ralphs
+</p>
 
 ## 3. Time spent for each function.
 
