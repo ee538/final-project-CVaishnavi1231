@@ -119,6 +119,9 @@ class TrojanMap {
   
   // Given a subgraph specified by a square-shape area, determine whether there is a
   // cycle or not in this subgraph.
+
+  bool hasCycle(std::string current_id,std::unordered_map<std::string, bool> &visited, std::string parent_id);
+
   bool CycleDetection(std::vector<std::string> &subgraph, std::vector<double> &square);
 
   // Given a location id and k, find the k closest points on the map

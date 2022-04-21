@@ -176,6 +176,8 @@ std::string TrojanMap::FindClosestName(std::string name) {
  */
 std::vector<std::string> TrojanMap::Autocomplete(std::string name){
   std::vector<std::string> results;
+  if (name == "") {
+    return results;}
   transform(name.begin(), name.end(), name.begin(), ::tolower);
   for(auto j = data.begin(); j != data.end(); j++){
     std::string str_orig = data[j->first].name;
@@ -305,8 +307,57 @@ std::vector<std::string> TrojanMap::CalculateShortestPath_Dijkstra(
  */
 std::vector<std::string> TrojanMap::CalculateShortestPath_Bellman_Ford(
     std::string location1_name, std::string location2_name){
+
+  std::string start = GetID(location1_name);
+  std::string end = GetID(location2_name);
   std::vector<std::string> path;
+  if(start=="" || end=="") return {};
+  if(start == end) return {start};
+
+  std::unordered_map<std::string,double> dist;
+  std::unordered_map<std::string,std::string> pre;
+
+  for(auto j = data.begin(); j != data.end(); j++){
+    dist[data[j->first].id] = DBL_MAX;
+    pre[data[j->first].id] = "";
+  }
+
+  dist[start] = 0;
+  bool start_flag= true;
+
+  if(start!=end){
+    for(auto i = data.begin(); i != data.end(); i++){
+      for(auto j = data.begin(); j != data.end(); j++){
+        std::string cuurent_id = data[j->first].id;
+        std::vector<std::string> neighbor_id_list = data[j->first].neighbors; 
+        for (auto n:neighbor_id_list){
+          double dist1 = CalculateDistance(cuurent_id,n); //w
+          if(dist[cuurent_id] + dist1 < dist[n]){
+            dist[n] = dist[cuurent_id] + dist1;
+            pre[n] = cuurent_id;
+            start_flag= false;
+          }
+        }
+      }
+      if(start_flag == true){
+        break;
+      }
+      start_flag = true;
+    }     
+  }
+
+  if (dist[end] == DBL_MAX){
+    return path;
+  } 
+  
+  for (auto p1 = end; p1 != start; p1 = pre[p1]){
+    path.push_back(p1);
+  }
+  path.push_back(start);
+
+  std::reverse(path.begin(), path.end());
   return path;
+  
 }
 
 /**
@@ -451,7 +502,12 @@ std::vector<std::string> TrojanMap::DeliveringTrojan(std::vector<std::string> &l
  * @return {bool}                      : in square or not
  */
 bool TrojanMap::inSquare(std::string id, std::vector<double> &square) {
-  return false;
+  std::vector<std::string> square_id = GetSubgraph(square);
+  if(std::find(square_id.begin(), square_id.end(), id) != square_id.end()) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 /**
@@ -463,6 +519,18 @@ bool TrojanMap::inSquare(std::string id, std::vector<double> &square) {
 std::vector<std::string> TrojanMap::GetSubgraph(std::vector<double> &square) {
   // include all the nodes in subgraph
   std::vector<std::string> subgraph;
+  double ver1 = square[0];
+  double ver2 = square[1];
+  double ver3 = square[2];
+  double ver4 = square[3];
+
+  for(auto j = data.begin(); j != data.end(); j++){
+    if((data[j->first].lon)>ver1 && (data[j->first].lon)<ver2){
+      if((data[j->first].lat)<ver3 && (data[j->first].lat)>ver4){
+        subgraph.push_back(data[j->first].id);
+      }
+    }
+  }
   return subgraph;
 }
 
@@ -474,7 +542,37 @@ std::vector<std::string> TrojanMap::GetSubgraph(std::vector<double> &square) {
  * @param {std::vector<double>} square: four vertexes of the square area
  * @return {bool}: whether there is a cycle or not
  */
+
+bool TrojanMap::hasCycle(std::string current_id,std::unordered_map<std::string, bool> &visited, std::string parent_id){
+  visited[current_id] = true;
+  for(auto n:data[current_id].neighbors){
+    if(visited.find(n) != visited.end()){ //to check if the neighbor is in the area
+      if(visited[n] == false){
+        if(hasCycle(n,visited,current_id)){
+          return true;
+        }
+      }else if((n!=parent_id) && (visited[n]== true)){
+          return true;
+      }
+    }
+  }
+  return false;
+}
+
 bool TrojanMap::CycleDetection(std::vector<std::string> &subgraph, std::vector<double> &square) {
+  std::unordered_map<std::string, bool> visited;
+
+  for(auto id_i:subgraph){
+    visited[id_i] = false;
+  }
+
+  for(auto id_itr:subgraph){
+    if(visited[id_itr] == false){
+      if (hasCycle(id_itr,visited,"")){
+        return true;
+      }
+    }
+  }
   return false;
 }
 

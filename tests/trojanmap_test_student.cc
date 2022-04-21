@@ -4,6 +4,8 @@
 #include "gtest/gtest.h"
 #include "src/lib/trojanmap.h"
 
+// ---------------- PHASE-1 TESTS --------------------------------------------
+
 TEST(TrojanMapStudentTest, GetLat) {
   TrojanMap m;
   EXPECT_EQ(m.GetLat("653725"), 34.0360852);
@@ -13,7 +15,6 @@ TEST(TrojanMapStudentTest, GetName) {
   TrojanMap m;
   EXPECT_EQ(m.GetName("122659207"), "Crosswalk");
 }
-
 
 TEST(TrojanMapStudentTest, GetID1) {
   TrojanMap m;
@@ -48,61 +49,46 @@ TEST(TrojanMapTest, FindClosestName) {
   EXPECT_EQ(TM.FindClosestName("Targeety"), "Target");
 }
 
-// ---------------- PHASE-1 TESTS --------------------------------------------
+// AUTOCOMPLETE
 
+// Test Case 1
 
-TEST(TrojanMapTest, Autocomplete) {
+TEST(TrojanMapTest, Autocomplete_1) {
   TrojanMap m;
-  // Test the simple case
-  auto names = m.Autocomplete("Chi");
-  std::unordered_set<std::string> gt = {"Chick-fil-A", "Chipotle", "Chinese Street Food"}; // groundtruth for "Ch"
-  int success = 0;
-  for (auto& n: names) {
-    EXPECT_EQ(gt.count(n) > 0, true) << n + " is not in gt.";
-    if (gt.count(n) > 0){
-      success++;
-    }
-  }
-  EXPECT_EQ(success, gt.size());
-  // Test the lower case
-  names = m.Autocomplete("chi");
-  success = 0;
-  for (auto& n: names) {
-    EXPECT_EQ(gt.count(n) > 0, true) << n + " is not in gt.";
-    if (gt.count(n) > 0){
-      success++;
-    }
-  }
-  EXPECT_EQ(success, gt.size());
-  // Test the lower and upper case 
-  names = m.Autocomplete("cHi"); 
-  success = 0;
-  for (auto& n: names) {
-    EXPECT_EQ(gt.count(n) > 0, true) << n + " is not in gt.";
-    if (gt.count(n) > 0){
-      success++;
-    }
-  }
-  EXPECT_EQ(success, gt.size());
-  // Test the upper case 
-  names = m.Autocomplete("CHI"); 
-  success = 0;
-  for (auto& n: names) {
-    EXPECT_EQ(gt.count(n) > 0, true) << n + " is not in gt.";
-    if (gt.count(n) > 0){
-      success++;
-    }
-  }
-  EXPECT_EQ(success, gt.size());
+  std::vector<std::string> o1 = { "Universal Truck Driving School", "University S.D.A. Church Food Pantry", "University Seventh Day Adventist Church", "University Park"}; 
+  EXPECT_EQ(m.Autocomplete("Univ"), o1); 
 }
 
-// Test CalculateEditDistance function
-TEST(TrojanMapTest, CalculateEditDistance) {
+// Test Case 2
+
+TEST(TrojanMapTest, Autocomplete_2) {
   TrojanMap m;
-  EXPECT_EQ(m.CalculateEditDistance("horse", "ros"), 3);
-  EXPECT_EQ(m.CalculateEditDistance("intention", "execution"), 5);
+  std::vector<std::string> o1 = { "Universal Truck Driving School", "University S.D.A. Church Food Pantry", "University Seventh Day Adventist Church", "University Park"}; 
+  EXPECT_EQ(m.Autocomplete("UNIV"), o1); // All upper case 
 }
 
+// Test Case 3
+
+TEST(TrojanMapTest, Autocomplete_3) {
+  TrojanMap m;
+  std::vector<std::string> o1 = { "Universal Truck Driving School", "University S.D.A. Church Food Pantry", "University Seventh Day Adventist Church", "University Park"}; 
+  EXPECT_EQ(m.Autocomplete("uNiV"), o1); // Upper and lower case
+}
+// Test Case 4
+
+TEST(TrojanMapTest, Autocomplete_4) {
+  TrojanMap m;
+  std::vector<std::string> o2 = {}; 
+  EXPECT_EQ(m.Autocomplete(""), o2); // Empty string
+}
+
+// Test Case 4
+
+TEST(TrojanMapTest, Autocomplete5) {
+  TrojanMap m;
+  std::vector<std::string> o2 = {}; 
+  EXPECT_EQ(m.Autocomplete("qwerty"), o2); // Case not found
+}
 
 // Test FindPosition function
 TEST(TrojanMapTest, FindPosition) {
@@ -124,6 +110,13 @@ TEST(TrojanMapTest, FindPosition) {
   position = m.GetPosition("XXX");
   std::pair<double, double> gt4(-1, -1);
   EXPECT_EQ(position, gt4);
+}
+
+// Test CalculateEditDistance function
+TEST(TrojanMapTest, CalculateEditDistance) {
+  TrojanMap m;
+  EXPECT_EQ(m.CalculateEditDistance("horse", "ros"), 3);
+  EXPECT_EQ(m.CalculateEditDistance("intention", "execution"), 5);
 }
 
 // -----------------  PHASE 2 ------------------------------------------------------------//
@@ -249,4 +242,138 @@ TEST(TrojanMapStudentTest, TopologicalSort3) {
   auto result = m.DeliveringTrojan(location_names, dependencies);
   std::vector<std::string> gt ={};
   EXPECT_EQ(result, gt);
+}
+
+// BELLMAN FORD ALGORITHM
+
+// Test case 1
+// Time taken by function: 8835 ms
+
+TEST(TrojanMapTest, Bellman_Ford_1) {
+  TrojanMap m;
+  m.CreateGraphFromCSVFile();
+  // Test from Chipotle to CVS Pharmacy
+  auto path = m.CalculateShortestPath_Bellman_Ford("Chipotle", "CVS Pharmacy");
+  std::vector<std::string> gt{
+ "732641023","9446678100","6820935908","216155217","6813411590","1472141024","6813405280","348121864",
+ "348121996","6813405275","1732243544","6819179749","4015372463","4015372469","1732243620","6814916523",
+ "6814916522","6813379547","6813379546","6813379536","6813379545","6813379544","6813379495","6813379494",
+ "3398574883","6813565327","3402810298","6813565328","3088548446"} ; 
+  // Print the path lengths
+  std::cout << "My path length: "  << m.CalculatePathLength(path) << "miles" << std::endl;
+  std::cout << "GT path length: " << m.CalculatePathLength(gt) << "miles" << std::endl;
+  EXPECT_EQ(path, gt);
+  
+  // Reverse the input from CVS Pharmacy to Chipotle
+  path = m.CalculateShortestPath_Bellman_Ford("CVS Pharmacy", "Chipotle");
+  std::reverse(gt.begin(),gt.end()); // Reverse the path
+
+  // Print the path lengths
+  std::cout << "My path length: "  << m.CalculatePathLength(path) << "miles" << std::endl;
+  std::cout << "GT path length: " << m.CalculatePathLength(gt) << "miles" << std::endl;
+  EXPECT_EQ(path, gt);
+}
+
+// Test case 2
+// Time taken by function: 8707 ms
+
+TEST(TrojanMapTest, Bellman_Ford_2) {
+  TrojanMap m;
+  m.CreateGraphFromCSVFile();
+  // Test from Chipotle to CVS Pharmacy
+  auto path = m.CalculateShortestPath_Bellman_Ford("Rock & Reillys", "Ralphs");
+  std::vector<std::string> gt{
+"6045035789","6813360952","6813360954","6814620882","6813360960","6813379480","6813360961",
+"6813379584","6813379479","4015372485","7071032399","4015372486","6813405232","122719216",
+"6813405229","4015372487","4015372488","6813405266","6813416159","122814447","4015377689",
+"4015377690","6816193698","6807937306","6807937309","6804883323","6816193696","544693739",
+"4015377691","6816193694","6816193693","6816193692","4015442011","6787470576","6816193770",
+"123230412","452688931","452688933","6816193774","123408705","6816193777","452688940","123318563",
+"6813416129","6813416130","7645318201","6813416131","8410938469","6805802087","4380040167",
+"4380040158","4380040154","2578244375"} ; 
+  // Print the path lengths
+  std::cout << "My path length: "  << m.CalculatePathLength(path) << "miles" << std::endl;
+  std::cout << "GT path length: " << m.CalculatePathLength(gt) << "miles" << std::endl;
+  EXPECT_EQ(path, gt);
+  
+  // Reverse the input from CVS Pharmacy to Chipotle
+  path = m.CalculateShortestPath_Bellman_Ford("Ralphs", "Rock & Reillys");
+  std::reverse(gt.begin(),gt.end()); // Reverse the path
+
+  // Print the path lengths
+  std::cout << "My path length: "  << m.CalculatePathLength(path) << "miles" << std::endl;
+  std::cout << "GT path length: " << m.CalculatePathLength(gt) << "miles" << std::endl;
+  EXPECT_EQ(path, gt);
+}
+
+// Test case 3
+// Time taken by function: 313 ms
+TEST(TrojanMapTest, No_path_Bellman_Ford) {
+  TrojanMap m;
+  m.CreateGraphFromCSVFile();
+  auto path = m.CalculateShortestPath_Bellman_Ford("Starbucks", "Fashion District");
+  std::vector<std::string> gt;  // expect no path
+  std::cout << "My path length: " << m.CalculatePathLength(path) << "miles" << std::endl;
+  std::cout << "GT path length: " << m.CalculatePathLength(gt) << "miles" << std::endl;
+  EXPECT_EQ(path, gt);
+  // Reversed Input
+  path = m.CalculateShortestPath_Bellman_Ford("Fashion District", "Starbucks");
+  std::cout << "My path length: " << m.CalculatePathLength(path) << "miles" << std::endl;
+  std::cout << "GT path length: " << m.CalculatePathLength(gt) << "miles" << std::endl;
+  EXPECT_EQ(path, gt);
+}
+
+// Test case 4
+// Time taken by function: 15 ms
+
+TEST(TrojanMapTest, Invalid_Input__Bellman_Ford) {
+  TrojanMap m;
+  m.CreateGraphFromCSVFile();
+  auto path = m.CalculateShortestPath_Bellman_Ford("qwer", "qwerty");
+  std::vector<std::string> gt; 
+  std::cout << "My path length: " << m.CalculatePathLength(path) << "miles" << std::endl;
+  std::cout << "GT path length: " << m.CalculatePathLength(gt) << "miles" << std::endl;
+  EXPECT_EQ(path, gt);
+}
+
+// 5. CYCLE DETECTION
+
+// Test case 1
+
+TEST(TrojanMapTest, CycleDetection1) {
+  TrojanMap m;
+  std::vector<double> s1 = {-118.2899, -118.26399, 34.030, 34.015};
+  auto sub1 = m.GetSubgraph(s1);
+  bool result = m.CycleDetection(sub1,s1);
+  EXPECT_EQ(result, true);
+}
+
+// Test case 2
+
+TEST(TrojanMapTest, CycleDetection2) {
+  TrojanMap m;
+  std::vector<double> s1 = {-118.2985, -118.2645, 34.0315, 34.0115};
+  auto sub1 = m.GetSubgraph(s1);
+  bool result = m.CycleDetection(sub1,s1);
+  EXPECT_EQ(result, true);
+}
+
+// Test case 3
+
+TEST(TrojanMapTest, CycleDetection3) {
+  TrojanMap m;
+  std::vector<double> square2 = {-118.290, -118.289, 34.030, 34.020};
+  auto sub2 = m.GetSubgraph(square2);
+  bool result = m.CycleDetection(sub2, square2);
+  EXPECT_EQ(result, false);
+}
+
+// Test case 4
+
+TEST(TrojanMapTest, CycleDetection4) {
+  TrojanMap m;
+  std::vector<double> s2 = {-118.290, -118.280, 34.030, 34.020};
+  auto sub2 = m.GetSubgraph(s2);
+  bool result = m.CycleDetection(sub2,s2);
+  EXPECT_EQ(result, true);
 }

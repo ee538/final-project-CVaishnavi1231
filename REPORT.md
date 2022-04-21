@@ -69,6 +69,7 @@ Dijkstra path from 23rd Street Cafe to Fashion District
 </p>
 
 
+
 11. ReadLocationsFromCSVFile
 
 The function ReadLocationsFromCSVFile takes CSV filename as the input, reads it and parse the locations data from CSV file. The locations name is appended to the vector which in turn is used for the topological sort problem.
@@ -109,6 +110,49 @@ Topological sorted path of Target to 901 Bar & Grill to The Caribbean Apartments
 <p align = "center">
 Topological sorted path of Food 4 Less to Chevron 2 to Adams-Normandie to Ralphs
 </p>
+
+
+10. CalculateShortestPath_Bellman_Ford
+
+The Bellman_Ford algorithm implementation is again used to find the shortest path between nodes in a graph. Firstly, we get the start and end node from the given location names. Here, we use two unordered maps to save the shortest disstance and to save the predecessor of each node. We initialize all the ids of the distance to infinity, and that of the predecessor maps to empty string. We do not use min heap in the Bellman Ford algorithm. We traverse through the data map to calculate the new distance of each neighbor node. We then update the neighbor's shortest distance by comparing it with the previous distance. If the shortest distance to end point exists we build the path using the predecessormap.
+
+Time Complexity : O(V+E) V - Vertices and E - Edges on the map
+
+<p align="center"><img src="img/Bellman_Ford_1.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Shortest path from Chipotle to CVS Pharmacy using Bellman Ford Algorithm. 
+</p>
+
+<p align="center"><img src="img/Bellman_Ford_2.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Shortest path from Rock & Reillys to Ralphs using Bellman Ford Algorithm. 
+</p>
+
+13. GetSubgraph
+
+This function takes four vertexes of the square area as the input and returns the list of location ids in the square. We traverse through the data map to extract the latitude and longitude. If the latitude and longitude lies between the given vertices then we append the corresponding location ids to the subgraph vector we created.
+
+14. hasCycle
+
+We initially set the current node as true in visited map. NExt we traverse the current node’s neighbor nodes and record current node as predecessor node of these neighbor nodes. If neighbor is in area and is unvisited we do recursive function and if the final recursive returns true it indicates a cycle exits in the graph and thus we return true, else if it is visited and it's not the parent node indicares there is a cycle in the graph and we return true. Else, if both the conditions fail it indicates there is no cycle and we return false.
+
+15. CycleDetection
+
+This function takes the four points of the square subgraph as input and returns true if there is a cycle path inside the square. We traverse all the nodes in the map. If the node position is in the square, add the pair in visited map. Next, we traverse all nodes in the visited map. If the node has not been visited, go to the hasCycle function. If hasCycle function returns true, we then use predecessor map to plot a cycle and return true.
+
+
+Time Complexity : O(N) 
+
+<p align="center"><img src="img/Cyclic_1.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Example 1 : Cycle detected for the given four points of the square-shape subgraph.
+</p>
+
+<p align="center"><img src="img/Cyclic_2.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Example 2 : Cycle detected for the given four points of the square-shape subgraph.
+</p>
+
 
 ## 3. Time spent for each function.
 
