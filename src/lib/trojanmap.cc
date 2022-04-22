@@ -68,7 +68,7 @@ std::vector<std::string> TrojanMap::GetNeighborIDs(const std::string& id) {
       n_id = data[j->first].neighbors;
     }
   }
-    return n_id;
+  return n_id;
 }
 
 
@@ -81,13 +81,16 @@ std::vector<std::string> TrojanMap::GetNeighborIDs(const std::string& id) {
  */
 std::string TrojanMap::GetID(const std::string& name) {
   std::string id1 = "";
+  if(name == ""){
+    return id1;
+  }
   for (auto j = data.begin(); j != data.end(); j++){
       std::string name1 = data[j->first].name;
       if(name1 == name ){
         id1 = data[j->first].id;
     }
   }
-    return id1;
+  return id1;
 }
 
 /**
@@ -99,11 +102,11 @@ std::string TrojanMap::GetID(const std::string& name) {
 std::pair<double, double> TrojanMap::GetPosition(std::string name) {
   std::pair<double, double> pos(-1, -1);
   std::string id = GetID(name) ;
-    if(id == "" ){
+      if(id == "" ){
       return pos;
-    } 
-    pos.first = GetLat(id);
-    pos.second = GetLon(id);
+  } 
+  pos.first = GetLat(id);
+  pos.second = GetLon(id);
     
   return pos;
 }

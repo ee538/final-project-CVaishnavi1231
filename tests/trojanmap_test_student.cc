@@ -112,6 +112,18 @@ TEST(TrojanMapTest, FindPosition) {
   EXPECT_EQ(position, gt4);
 }
 
+TEST(TrojanMapTest, FindPosition1) {
+  TrojanMap m;
+  std::pair<double, double> gt1(34.0167334, -118.2825307); 
+  EXPECT_EQ(m.GetPosition("Chick-fil-A"), gt1); // Chick-fil-A Test Case
+
+  std::pair<double, double> gt2(-1, -1); // Empty String
+  EXPECT_EQ(m.GetPosition(""), gt2);
+
+  std::pair<double, double> gt3(-1, -1); // Case not found
+  EXPECT_EQ(m.GetPosition("asdf"), gt3);
+}
+
 // Test CalculateEditDistance function
 TEST(TrojanMapTest, CalculateEditDistance) {
   TrojanMap m;
