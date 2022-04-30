@@ -6,6 +6,13 @@
 
 ## 1. High-level overview of your design (Use diagrams and pictures for your data structures).
 
+The trojanmap  is an interactive UI map application of the USC campus and its surroundings.  The map has been designed using a graph data structure where each node corresponds to the location.  Each node has a list of features assigned to it - id, latitude, longitude , attributes, and neighbors.  We have implemented various graph algorithms like cycle detection, traveling salesman problem and topological sort. The shortest path between two locations (nodes) has been calculated using two algorithms - Bellman Ford Algorithm and Djikstra Algorithm. Most of the graph algorithms were implemented using depth search first and stack.
+
+<p align="center"><img src="img/graph.jpeg" alt="Trojan" width="500" /></p>
+<p align = "center">
+Graph Data structure 
+</p>
+
 
 ## 2. Detailed description of each function and its time complexity. 
 
@@ -68,7 +75,21 @@ Dijkstra path from Ralphs to Target
 Dijkstra path from 23rd Street Cafe to Fashion District
 </p>
 
+10. CalculateShortestPath_Bellman_Ford
 
+The Bellman_Ford algorithm implementation is again used to find the shortest path between nodes in a graph. Firstly, we get the start and end node from the given location names. Here, we use two unordered maps to save the shortest disstance and to save the predecessor of each node. We initialize all the ids of the distance to infinity, and that of the predecessor maps to empty string. We do not use min heap in the Bellman Ford algorithm. We traverse through the data map to calculate the new distance of each neighbor node. We then update the neighbor's shortest distance by comparing it with the previous distance. If the shortest distance to end point exists we build the path using the predecessormap.
+
+Time Complexity : O(V+E) V - Vertices and E - Edges on the map
+
+<p align="center"><img src="img/Bellman_Ford_1.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Shortest path from Chipotle to CVS Pharmacy using Bellman Ford Algorithm. 
+</p>
+
+<p align="center"><img src="img/Bellman_Ford_2.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Shortest path from Rock & Reillys to Ralphs using Bellman Ford Algorithm. 
+</p>
 
 11. ReadLocationsFromCSVFile
 
@@ -81,6 +102,33 @@ Time Complexity : O(N)
 The function ReadDependenciesFromCSVFile takes CSV filename whic has the source and ddestination names as the input, reads it and parse the dependencise data from CSV file. We create a vector of two strings i.e the source and destination. This vector pair is appendend to another vector which in turn is used for the topological sort problem.
 
 Time Complexity : O(M*N)
+
+
+13. GetSubgraph
+
+This function takes four vertexes of the square area as the input and returns the list of location ids in the square. We traverse through the data map to extract the latitude and longitude. If the latitude and longitude lies between the given vertices then we append the corresponding location ids to the subgraph vector we created.
+
+14. hasCycle
+
+We initially set the current node as true in visited map. NExt we traverse the current node’s neighbor nodes and record current node as predecessor node of these neighbor nodes. If neighbor is in area and is unvisited we do recursive function and if the final recursive returns true it indicates a cycle exits in the graph and thus we return true, else if it is visited and it's not the parent node indicares there is a cycle in the graph and we return true. Else, if both the conditions fail it indicates there is no cycle and we return false.
+
+15. CycleDetection
+
+This function takes the four points of the square subgraph as input and returns true if there is a cycle path inside the square. We traverse all the nodes in the map. If the node position is in the square, add the pair in visited map. Next, we traverse all nodes in the visited map. If the node has not been visited, go to the hasCycle function. If hasCycle function returns true, we then use predecessor map to plot a cycle and return true.
+
+
+Time Complexity : O(N) 
+
+<p align="center"><img src="img/Cyclic_1.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Example 1 : Cycle detected for the given four points of the square-shape subgraph.
+</p>
+
+<p align="center"><img src="img/Cyclic_2.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Example 2 : Cycle detected for the given four points of the square-shape subgraph.
+</p>
+
 
 16. Topologicalsort_helper
 
@@ -111,47 +159,22 @@ Topological sorted path of Target to 901 Bar & Grill to The Caribbean Apartments
 Topological sorted path of Food 4 Less to Chevron 2 to Adams-Normandie to Ralphs
 </p>
 
+18. Travelling Salesman Problem - Brute Force
 
-10. CalculateShortestPath_Bellman_Ford
+Given a list of locations, the algorithm returns the shortest path which visit all the places and back to the start point. The algorithm takes the permutation of all possible paths possible and returns the shortest path. Initially we set the minimum cost to DBL_MAX. We recursively calculate the cost and keep updating the min_cost, cur_cost of the paths along with simultaneously updating the result. If the previous distance is bigger than the current distance we push the current path. We proceed until we get the best path.
 
-The Bellman_Ford algorithm implementation is again used to find the shortest path between nodes in a graph. Firstly, we get the start and end node from the given location names. Here, we use two unordered maps to save the shortest disstance and to save the predecessor of each node. We initialize all the ids of the distance to infinity, and that of the predecessor maps to empty string. We do not use min heap in the Bellman Ford algorithm. We traverse through the data map to calculate the new distance of each neighbor node. We then update the neighbor's shortest distance by comparing it with the previous distance. If the shortest distance to end point exists we build the path using the predecessormap.
-
-Time Complexity : O(V+E) V - Vertices and E - Edges on the map
-
-<p align="center"><img src="img/Bellman_Ford_1.png" alt="Trojan" width="500" /></p>
-<p align = "center">
-Shortest path from Chipotle to CVS Pharmacy using Bellman Ford Algorithm. 
-</p>
-
-<p align="center"><img src="img/Bellman_Ford_2.png" alt="Trojan" width="500" /></p>
-<p align = "center">
-Shortest path from Rock & Reillys to Ralphs using Bellman Ford Algorithm. 
-</p>
-
-13. GetSubgraph
-
-This function takes four vertexes of the square area as the input and returns the list of location ids in the square. We traverse through the data map to extract the latitude and longitude. If the latitude and longitude lies between the given vertices then we append the corresponding location ids to the subgraph vector we created.
-
-14. hasCycle
-
-We initially set the current node as true in visited map. NExt we traverse the current node’s neighbor nodes and record current node as predecessor node of these neighbor nodes. If neighbor is in area and is unvisited we do recursive function and if the final recursive returns true it indicates a cycle exits in the graph and thus we return true, else if it is visited and it's not the parent node indicares there is a cycle in the graph and we return true. Else, if both the conditions fail it indicates there is no cycle and we return false.
-
-15. CycleDetection
-
-This function takes the four points of the square subgraph as input and returns true if there is a cycle path inside the square. We traverse all the nodes in the map. If the node position is in the square, add the pair in visited map. Next, we traverse all nodes in the visited map. If the node has not been visited, go to the hasCycle function. If hasCycle function returns true, we then use predecessor map to plot a cycle and return true.
+Time Complexity : O(n!)
 
 
-Time Complexity : O(N) 
+20. Travelling Salesman Problem - 2 Opt Heuristic
 
-<p align="center"><img src="img/Cyclic_1.png" alt="Trojan" width="500" /></p>
-<p align = "center">
-Example 1 : Cycle detected for the given four points of the square-shape subgraph.
-</p>
+The algorithm randomly swaps between two nodes of the path and is continued for certain number of iterations while there is improvement. This is done to avoid path crossing. Initially we set the minimum cost as DBL_MAX. The algorithm finds a new path on every iteration until we find the improved path. If the new path length is better than a previous path we will push them into the results.
 
-<p align="center"><img src="img/Cyclic_2.png" alt="Trojan" width="500" /></p>
-<p align = "center">
-Example 2 : Cycle detected for the given four points of the square-shape subgraph.
-</p>
+Time Complexity : O(n*k) where k is the number of improvements possible
+
+
+21. Travelling Salesman Problem - 3 Opt Heuristic (Extra Credit)
+
 
 
 ## 3. Time spent for each function.

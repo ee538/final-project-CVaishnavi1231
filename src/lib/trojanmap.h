@@ -129,6 +129,9 @@ class TrojanMap {
   
   //----------------------------------------------------- User-defined functions
   void topologicalsort_helper(std::string loc,std::map<std::string, bool> &visited,std::stack<std::string> &loc_stack,std::unordered_map<std::string, std::vector<std::string>> adj);
+  std::vector<std::string> twoOptSwap(const std::vector<std::string> &route, int i, int k);
+  std::vector<std::string> TSP_3optSwap(std::vector<std::string> &loc, int i, int k, int j);
+  std::pair<double, std::vector<std::vector<std::string>>> TravellingTrojan_3opt(std::vector<std::string> &location_ids);
 
 };
 

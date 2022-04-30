@@ -373,6 +373,51 @@ std::vector<std::string> TrojanMap::CalculateShortestPath_Bellman_Ford(
 std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravellingTrojan_Brute_force(
                                     std::vector<std::string> location_ids) {
   std::pair<double, std::vector<std::vector<std::string>>> records;
+  if(location_ids.size() == 0){
+    records.first = 0;
+    std::vector<std::vector<std::string>> temp;
+    records.second = temp;
+  }
+  if(location_ids.size()<2) {
+    return records;
+  }
+  std::vector<std::string> locations;
+  std::string src = location_ids[0];
+  std::vector<std::vector<std::string>> final_path;
+  std::vector<std::string> current_path;
+
+  for(auto loc : location_ids){
+    if (loc != src){
+      locations.push_back(loc);
+    }      
+  }
+
+  double min_dist = DBL_MAX;
+
+  do {
+    double current_dist = 0;
+    std::string current_loc = src;
+    for (int i = 0; i < locations.size(); i++) {
+      current_dist += CalculateDistance(current_loc,locations[i]);
+      current_loc = locations[i];
+    }
+    current_dist += CalculateDistance(current_loc,src);
+    if(min_dist>current_dist)
+    {
+      current_path.clear();
+      current_path.push_back(src);
+
+      for(auto loc: locations)
+        current_path.push_back(loc);
+        current_path.push_back(src);
+        final_path.push_back(current_path);
+    }
+    min_dist = min_dist < current_dist ? min_dist : current_dist;
+    } while (
+        next_permutation(locations.begin(), locations.end()));
+
+  records.first = min_dist;
+  records.second = final_path;
   return records;
 }
 
@@ -382,11 +427,184 @@ std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravellingTr
   return records;
 }
 
+std::vector<std::string> TrojanMap::twoOptSwap(const std::vector<std::string> &route, int i, int k) {
+  std::vector<std::string> res(route);
+  std::reverse(res.begin() + i, res.begin() + k + 1);
+  return res;
+}
+
 std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravellingTrojan_2opt(
       std::vector<std::string> location_ids){
+
   std::pair<double, std::vector<std::vector<std::string>>> records;
+  if(location_ids.size() == 0){
+    records.first = 0;
+    std::vector<std::vector<std::string>> temp;
+    records.second = temp;
+  }
+    if(location_ids.size()<2) {
+    return records;
+  }
+
+  std::vector<std::string> existing_route = location_ids;
+  existing_route.push_back(location_ids[0]);
+  bool improve = true;
+
+  while(improve){
+    start_again:
+    improve = false;
+    double best_distance = CalculatePathLength(existing_route);
+    for(int i = 1; i <= location_ids.size() - 2; i++){
+      for(int k = i + 1; k <= location_ids.size() - 1; k++){
+        auto new_route = twoOptSwap(existing_route, i, k);
+        double new_dist = CalculatePathLength(new_route);
+        if(new_dist < best_distance){
+          existing_route = new_route;
+          best_distance = new_dist;
+          records.first = best_distance;
+          records.second.push_back(existing_route);
+          improve = true;
+          goto start_again;
+        }
+      }
+    }
+  }
   return records;
 }
+
+
+// 3-opt Traveling Salesman Problem Extra credit
+
+std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravellingTrojan_3opt(std::vector<std::string> &location_ids){
+  
+  std::pair<double, std::vector<std::vector<std::string>>> records;
+  if(location_ids.size()<2) {
+    return records;
+  }
+  std::vector<std::vector<std::string>> final_path;
+  std::vector<std::string> current_path;
+  for(auto location:location_ids){
+    current_path.push_back(location);
+  }
+  current_path.push_back(location_ids[0]);
+  double current_dist = CalculatePathLength(current_path);
+  final_path.push_back(current_path);
+
+  bool improve = false;
+  while(!improve){
+    improve = true;
+    
+    for(auto i=0;i<current_path.size()-3;i++){
+      for(auto j=i+1;j<current_path.size()-2;j++){
+        int k = current_path.size() - 2;
+        std::vector<std::string> part_1(current_path.begin(),current_path.begin()+i+1);
+        std::vector<std::string> part_2(current_path.begin()+i+1,current_path.begin()+j+1);
+        std::vector<std::string> part_3(current_path.begin()+j+1,current_path.begin()+k+1);
+
+        int index = 0;
+        std::vector<std::string> path_1;
+        path_1.insert(path_1.end(),part_1.begin(),part_1.end());
+        path_1.insert(path_1.end(),part_3.begin(),part_3.end());
+        path_1.insert(path_1.end(),part_2.begin(),part_2.end());
+        path_1.push_back(path_1[0]);
+
+        double dist_1 = CalculatePathLength(path_1);
+        if(dist_1 < current_dist){
+          index = 1;
+          current_dist = dist_1;
+        }
+
+        std::vector<std::string> path_2;
+        path_2.insert(path_2.end(),part_1.begin(),part_1.end());
+        path_2.insert(path_2.end(),part_3.begin(),part_3.end());
+        path_2.insert(path_2.end(),part_2.begin(),part_2.end());
+        std::reverse(path_2.begin()+j+1,path_2.begin()+k+1);
+        path_2.push_back(path_2[0]);
+        double dist_2 = CalculatePathLength(path_2);
+        if(dist_2 < current_dist){
+          index = 2;
+          current_dist = dist_2;
+        }
+        std::vector<std::string> path_3;
+        path_3.insert(path_3.end(),part_1.begin(),part_1.end());
+        path_3.insert(path_3.end(),part_3.begin(),part_3.end());
+        path_3.insert(path_3.end(),part_2.begin(),part_2.end());
+        std::reverse(path_3.begin()+i+1,path_3.begin()+j+1);
+        path_3.push_back(path_3[0]);
+        double dist_3 = CalculatePathLength(path_3);
+        if(dist_3 < current_dist){
+          index = 3;
+          current_dist = dist_3;
+        }
+
+        std::vector<std::string> path_4;
+        path_4.insert(path_4.end(),part_1.begin(),part_1.end());
+        path_4.insert(path_4.end(),part_3.begin(),part_3.end());
+        path_4.insert(path_4.end(),part_2.begin(),part_2.end());
+        std::reverse(path_4.begin()+i+1,path_4.begin()+k+1);
+        path_4.push_back(path_4[0]);
+        double dist_4 = CalculatePathLength(path_4);
+        if(dist_4 < current_dist){
+          index = 4;
+          current_dist = dist_4;
+        }
+
+        std::vector<std::string> path_5;
+        path_5.insert(path_5.end(),part_1.begin(),part_1.end());
+        path_5.insert(path_5.end(),part_2.begin(),part_2.end());
+        path_5.insert(path_5.end(),part_3.begin(),part_3.end());
+        std::reverse(path_5.begin()+j+1,path_5.begin()+k+1);
+        path_5.push_back(path_5[0]);
+        double dist_5 = CalculatePathLength(path_5);
+        if(dist_5 < current_dist){
+          index = 5;
+          current_dist = dist_5;
+        }
+
+        std::vector<std::string> path_6;
+        path_6.insert(path_6.end(),part_1.begin(),part_1.end());
+        path_6.insert(path_6.end(),part_2.begin(),part_2.end());
+        path_6.insert(path_6.end(),part_3.begin(),part_3.end());
+        std::reverse(path_6.begin()+i+1,path_6.begin()+j+1);
+        path_6.push_back(path_6[0]);
+        double dist_6 = CalculatePathLength(path_6);
+        if(dist_6 < current_dist){
+          index = 6;
+          current_dist = dist_6;
+        }
+
+        std::vector<std::string> path_7;
+        path_7.insert(path_7.end(),part_1.begin(),part_1.end());
+        path_7.insert(path_7.end(),part_2.begin(),part_2.end());
+        path_7.insert(path_7.end(),part_3.begin(),part_3.end());
+        std::reverse(path_7.begin()+i+1,path_7.begin()+j+1);
+        std::reverse(path_7.begin()+j+1,path_7.begin()+k+1);
+        path_7.push_back(path_7[0]);
+        double dist_7 = CalculatePathLength(path_7);
+        if(dist_7 < current_dist){
+          index = 7;
+          current_dist = dist_7;
+        }
+        switch (index)
+        {
+          case 1: current_path = std::move(path_1);break;
+          case 2: current_path = std::move(path_2);break;
+          case 3: current_path = std::move(path_3);break;
+          case 4: current_path = std::move(path_4);break;
+          case 5: current_path = std::move(path_5);break;
+          case 6: current_path = std::move(path_6);break;
+          case 7: current_path = std::move(path_7);break;
+        }
+        if(index!=0){
+          final_path.push_back(current_path);
+          improve = false;
+        }
+      }
+    }
+  }
+  return std::pair<double, std::vector<std::vector<std::string>>>(current_dist,final_path);
+}
+
 
 /**
  * Given CSV filename, it read and parse locations data from CSV file,
