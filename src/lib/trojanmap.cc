@@ -421,9 +421,60 @@ std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravellingTr
   return records;
 }
 
+
+std::vector<std::string> TrojanMap::create_path(std::vector<std::string> &location_ids,std::vector<int> current_path){
+  std::vector<std::string> path_created(location_ids.size()); 
+  int j = 0;
+  for(auto i = 0; i<current_path.size(); i++){
+    j = current_path[i];
+    path_created[i]= location_ids[j];
+  }
+  path_created.push_back(location_ids[0]);
+  return path_created;
+}
+
+void TrojanMap::TravellingTrojan_Backtracking_helper(int start,std::vector<std::string> &location_ids,int current_id, double current_cost,std::vector<int> &current_path, double &min_cost, std::vector<int> &min_path, std::pair<double, std::vector<std::vector<std::string>>> &records){
+  std::vector<std::string> path_created(location_ids.size());
+  if(current_path.size()==location_ids.size()){
+    
+    double final_cost = current_cost + CalculateDistance(location_ids[current_id],location_ids[start]);
+    if(final_cost < min_cost){
+      records.first = final_cost;
+      min_cost = final_cost;
+      min_path = current_path;
+      path_created = create_path(location_ids,current_path);
+      records.first = min_cost;
+      records.second.push_back(path_created);
+    } 
+    return;
+  }
+  if(current_cost>records.first){
+    return;
+  }
+  for(int j = 0; j < location_ids.size(); j++){
+    auto path_itr = std::find(current_path.begin(), current_path.end(), j);
+    if(path_itr == current_path.end()){
+      current_path.push_back(j);
+      TravellingTrojan_Backtracking_helper(start, location_ids, j, current_cost + CalculateDistance(location_ids[current_id],location_ids[j]), current_path, min_cost, min_path,records);
+      current_path.pop_back();
+      }
+  }
+}
+	
+
 std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravellingTrojan_Backtracking(
                                     std::vector<std::string> location_ids) {
   std::pair<double, std::vector<std::vector<std::string>>> records;
+  
+  int start = 0;
+  if(location_ids.size()<2) {
+    return records;
+  }
+  std::vector<int> current_path = {0};
+  std::vector<int> min_path;
+  double min_cost = DBL_MAX;
+  records.first= min_cost;
+  TravellingTrojan_Backtracking_helper(start,location_ids,start, 0.0, current_path,min_cost,min_path,records);
   return records;
 }
 
@@ -809,8 +860,36 @@ bool TrojanMap::CycleDetection(std::vector<std::string> &subgraph, std::vector<d
  */
 std::vector<std::string> TrojanMap::FindNearby(std::string attributesName, std::string name, double r, int k) {
   std::vector<std::string> res;
+  std::vector<std::string> result_temp;
+  std::string current_id = GetID(name);
+  if(current_id == ""){
+    return res;
+  }
+  std::map<double, std::string, std::greater<double>> attributes_name_id;
+
+  for(auto j = data.begin(); j != data.end(); j++){
+    for(auto att:data[j->first].attributes){
+      if(att == attributesName){
+          double res = CalculateDistance(current_id,data[j->first].id);
+          if((res<=r) &&(res!=0)){
+            attributes_name_id[res] = data[j->first].id;
+          }
+      }
+    }
+  }
+
+  for(auto m:attributes_name_id){
+    result_temp.push_back(m.second);
+  }
+  std::reverse(result_temp.begin(), result_temp.end());
+  if(result_temp.size()>k){
+    res = {result_temp.begin(), result_temp.begin() + k};
+  }else{
+    res = result_temp;
+  }
   return res;
 }
+
 
 /**
  * CreateGraphFromCSVFile: Read the map data from the csv file

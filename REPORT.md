@@ -91,6 +91,11 @@ Shortest path from Chipotle to CVS Pharmacy using Bellman Ford Algorithm.
 Shortest path from Rock & Reillys to Ralphs using Bellman Ford Algorithm. 
 </p>
 
+<p align="center"><img src="img/Shortest Dist.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Runtime comparison of the two algorithms for different examples.
+</p>
+
 11. ReadLocationsFromCSVFile
 
 The function ReadLocationsFromCSVFile takes CSV filename as the input, reads it and parse the locations data from CSV file. The locations name is appended to the vector which in turn is used for the topological sort problem.
@@ -165,6 +170,11 @@ Given a list of locations, the algorithm returns the shortest path which visit a
 
 Time Complexity : O(n!)
 
+19. Travelling Salesman Problem - Backtracking
+
+Initially we set the minimum cost as DBL_MAX. The algorithm takes the permutation of all possible paths possible and returns the shortest path as the result. We recursively call the TSP helper function to keep updating the min_cost, cur_cost of the paths along with simultaneously updating the result. In this algorithm as soon as the current path cost excceds the previous path cost we break out of the loop and further continue with running the DFS for the next path. The algorith is run until the best path is achieved. 
+
+Time Complexity : O(n!)
 
 20. Travelling Salesman Problem - 2 Opt Heuristic
 
@@ -172,8 +182,20 @@ The algorithm randomly swaps between two nodes of the path and is continued for 
 
 Time Complexity : O(n*k) where k is the number of improvements possible
 
+<p align="center"><img src="img/TSP Comp.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Runtime comparison of the three TSP algorithms
+</p>
 
-21. Travelling Salesman Problem - 3 Opt Heuristic (Extra Credit)
+
+21. Find Nearby 
+
+The algorithm returns a list of k locations closest to the name of interest within the radius r in increasing order of distance. In this function we create a map with the keys which stores the distance between the current id and the given id and the value is the corresponding current id. The distances are stored in the descending order in the map. We iterate over the entire data, if the attribute of the current location matches the given attribute to the function, then the distance between the current id and the current id are pushed to the map. The reversed list of ids created from the map is returned.
+
+
+Time Complexity: O(n)
+
+22. Travelling Salesman Problem - 3 Opt Heuristic (Extra Credit)
 
 
 
@@ -185,7 +207,25 @@ In this section we compute the time spent for each function.
 
 2. Find the location : The time taken by the function to execute and give the result is approximately 16ms.
 
+3. Calculate shortest distance - Dijkstra Algorithm : Average Time taken by function is 94 ms.
 
+4. Calculate shortest distance - Bellman-Ford Algorithm : Average Time taken by function is 8798 ms.
+
+5. Travelling Salesman Problem - Brute-Force : 
+
+6. Travelling Salesman Problem - Backtracking :
+
+7. Travelling Salesman Problem - 2-Opt Heuristic :
+
+8. Cycle Detection : Average Time taken by function is 8798 ms.
+
+9. Delivering Trojan : Average Time taken by function is 8798 ms.
+
+10. Find Nearby : Average Time taken by function is 8798 ms.
 
 
 ## 4. Discussion, conclusion, and lessons learned.
+
+Through this project we got to increase our knowledge about various data structures by implementing a variety of algorithms. By building this project from the roots, we have had the unique opportunity to gain hands-on experience with the c++ frameworks, allowing us to develop concrete proficiency in C++ and data structures. 
+
+We worked on the graph data structure to represent the map and implemented algorithms on that. Most importantly, after the initial release of the project's assignment, the course structure evolved to guide us through a variety of algorithmic concepts such as Dijkstra, Bellman-Ford, 2-opt for TSP, Cycle Detection and Topological Sort, all of which can be considered cornerstones of the theory of algorithms in Computer Science.
