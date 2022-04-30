@@ -43,11 +43,24 @@ The for loop is used to traverse over the data where in we are dereferencing the
 
 The input to the function Autocomplete name which is a partial name is converted to lower case to avoid any discrepancy. The for loop is used to traverse over the data where in we are dereferencing the iterator to get the first member (Key) and we are extracting the name of the node(location) of that correspoding key and creating a copy of the name extracted. The copy of the name is also converted to lower case and this is compared against the partial name converted to lower case, if the partial string is at found at the zeroth index of the name (i.e the partial name is the prefix), then the location name is pushed into a vector. The vector containing the list of all names which has the partial name as prefix is returned. 
 
+<p align="center"><img src="img/autocomplete.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Output of the autocomplete function
+</p>
 
 7. GetPosition
 
 First the id corresponding to the given name is extracted using the GetID function. If the Id obtained is an empty string then a default pair is returned with latitude and longitude set to -1 else we get the latitude and logitude using the GetLat and GetLon function for the corresponding id and assign it to the first and second element of the pair and return the pair
  
+ <p align="center"><img src="img/get_location.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Output of Get Position function
+</p>
+
+<p align="center"><img src="img/get_location_2.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Output of Get Position function on the map
+</p>
 
 8. CalculateEditDistance
 
@@ -168,17 +181,32 @@ Topological sorted path of Food 4 Less to Chevron 2 to Adams-Normandie to Ralphs
 
 Given a list of locations, the algorithm returns the shortest path which visit all the places and back to the start point. The algorithm takes the permutation of all possible paths possible and returns the shortest path. Initially we set the minimum cost to DBL_MAX. We recursively calculate the cost and keep updating the min_cost, cur_cost of the paths along with simultaneously updating the result. If the previous distance is bigger than the current distance we push the current path. We proceed until we get the best path.
 
+<p align="center"><img src="img/output_brute_force.gif" alt="Trojan" width="500" /></p>
+<p align = "center">
+Output of Travelling Salesman Problem - Brute Force
+</p>
+
 Time Complexity : O(n!)
 
 19. Travelling Salesman Problem - Backtracking
 
 Initially we set the minimum cost as DBL_MAX. The algorithm takes the permutation of all possible paths possible and returns the shortest path as the result. We recursively call the TSP helper function to keep updating the min_cost, cur_cost of the paths along with simultaneously updating the result. In this algorithm as soon as the current path cost excceds the previous path cost we break out of the loop and further continue with running the DFS for the next path. The algorith is run until the best path is achieved. 
 
+<p align="center"><img src="img/output0_backtracking.gif" alt="Trojan" width="500" /></p>
+<p align = "center">
+Output of Travelling Salesman Problem - Backtracking
+</p>
+
 Time Complexity : O(n!)
 
 20. Travelling Salesman Problem - 2 Opt Heuristic
 
 The algorithm randomly swaps between two nodes of the path and is continued for certain number of iterations while there is improvement. This is done to avoid path crossing. Initially we set the minimum cost as DBL_MAX. The algorithm finds a new path on every iteration until we find the improved path. If the new path length is better than a previous path we will push them into the results.
+
+<p align="center"><img src="img/output0_2opt.gif" alt="Trojan" width="500" /></p>
+<p align = "center">
+Output of Travelling Salesman Problem - 2 Opt Heuristic
+</p>
 
 Time Complexity : O(n*k) where k is the number of improvements possible
 
@@ -192,6 +220,20 @@ Runtime comparison of the three TSP algorithms
 
 The algorithm returns a list of k locations closest to the name of interest within the radius r in increasing order of distance. In this function we create a map with the keys which stores the distance between the current id and the given id and the value is the corresponding current id. The distances are stored in the descending order in the map. We iterate over the entire data, if the attribute of the current location matches the given attribute to the function, then the distance between the current id and the current id are pushed to the map. The reversed list of ids created from the map is returned.
 
+<p align="center"><img src="img/find_nearby.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Output of find nearby function
+</p>
+
+<p align="center"><img src="img/find_nearby2.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Output of find nearby function on the map
+</p>
+
+<p align="center"><img src="img/find_nearby3.png" alt="Trojan" width="500" /></p>
+<p align = "center">
+Output of find nearby function when the given conditions are not satisfied
+</p>
 
 Time Complexity: O(n)
 
