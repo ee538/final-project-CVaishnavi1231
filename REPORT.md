@@ -253,11 +253,11 @@ In this section we compute the time spent for each function.
 
 4. Calculate shortest distance - Bellman-Ford Algorithm : Average Time taken by function is 8798 ms.
 
-5. Travelling Salesman Problem - Brute-Force : 
+5. Travelling Salesman Problem - Brute-Force : 2081 ms (10 points)
 
-6. Travelling Salesman Problem - Backtracking :
+6. Travelling Salesman Problem - Backtracking : 480 ms (10 points)
 
-7. Travelling Salesman Problem - 2-Opt Heuristic :
+7. Travelling Salesman Problem - 2-Opt Heuristic : 1 ms (10 points)
 
 8. Cycle Detection : Average Time taken by function is 8798 ms.
 
