@@ -4,6 +4,8 @@
 ## 1. Vaishnavi Channakeshava
 ## 2. Sanjana Vasudeva
 
+## Link to the Video presentation : https://www.youtube.com/watch?v=w9hfBvnzT5o
+
 ## 1. High-level overview of your design (Use diagrams and pictures for your data structures).
 
 The trojanmap  is an interactive UI map application of the USC campus and its surroundings.  The map has been designed using a graph data structure where each node corresponds to the location.  Each node has a list of features assigned to it - id, latitude, longitude , attributes, and neighbors.  We have implemented various graph algorithms like cycle detection, traveling salesman problem and topological sort. The shortest path between two locations (nodes) has been calculated using two algorithms - Bellman Ford Algorithm and Djikstra Algorithm. Most of the graph algorithms were implemented using depth search first and stack.
